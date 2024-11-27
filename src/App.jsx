@@ -9,6 +9,11 @@ import './App.css';
 import { Orders } from './componentes/Orders';
 import Login from './componentes/Login';
 import { LoginForm } from './componentes/LoginForm';
+import Cards from './componentes/Cards';
+import AddProduct from './componentes/AddProduct';
+import UserHistory from './componentes/UserHistory';
+
+
 
 const App = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -132,15 +137,18 @@ const App = () => {
             </div>
           )}
           {role === 'admin' ? (
-            <Orders />
+            <><Orders /><Cards /><AddProduct /></>
           ) : loading ? (
             <p>Cargando menú...</p>
           ) : (
             <>
+            
               <h1>Sistema de Gestión de Menú y Órdenes</h1>
               <Menu menuItems={menuItems} addToOrden={addToOrden} removeFromOrden={removeFromOrden} />
+              
               <Orden orden={orden} clearOrden={clearOrden} onOrderSuccess={handleOrderSuccess} />
               <Pago orden={orden} clearOrden={clearOrden} onOrderSuccess={handleOrderSuccess} />
+              <UserHistory />
             </>
           )}
         </>
