@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { collection, doc, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { collection, updateDoc, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
 
 const Cards = () => {
@@ -11,9 +11,8 @@ const Cards = () => {
     Precio: "",
   });
 
-  const fetchProducts = () => {
-    const productsRef = collection(db, "Products");
-    const unsubscribe = onSnapshot(productsRef, (snapshot) => {
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "Products"), (snapshot) => {
       const productsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -22,27 +21,17 @@ const Cards = () => {
     });
 
     return () => unsubscribe();
-  };
+  }, []);
 
   const toggleAvailability = async (id, currentStatus) => {
-    try {
-      const newStatus = currentStatus === "Disponible" ? "No Disponible" : "Disponible";
-      const productRef = doc(db, "Products", id);
-      await updateDoc(productRef, { Estado: newStatus });
-      console.log(`Producto ${id} marcado como ${newStatus}.`);
-    } catch (error) {
-      console.error("Error al cambiar el estado del producto: ", error);
-    }
+    const newStatus = currentStatus === "Disponible" ? "No Disponible" : "Disponible";
+    const productRef = doc(db, "Products", id);
+    await updateDoc(productRef, { Estado: newStatus });
   };
 
   const deleteProduct = async (id) => {
-    try {
-      const productRef = doc(db, "Products", id);
-      await deleteDoc(productRef);
-      console.log(`Producto ${id} eliminado.`);
-    } catch (error) {
-      console.error("Error al eliminar el producto: ", error);
-    }
+    const productRef = doc(db, "Products", id);
+    await deleteDoc(productRef);
   };
 
   const startEditing = (product) => {
@@ -54,87 +43,51 @@ const Cards = () => {
     });
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   const saveChanges = async (id) => {
-    try {
-      const productRef = doc(db, "Products", id);
-      await updateDoc(productRef, formData);
-      console.log(`Producto ${id} actualizado.`);
-      setEditingProduct(null);
-    } catch (error) {
-      console.error("Error al actualizar el producto: ", error);
-    }
+    const productRef = doc(db, "Products", id);
+    await updateDoc(productRef, formData);
+    setEditingProduct(null);
   };
-
-  useEffect(() => {
-    const unsubscribe = fetchProducts();
-    return () => unsubscribe(); 
-  }, []);
 
   return (
-    <div className="cards-section">
-      <div className="cards-container">
+    <div>
+      <h2>Editar o Eliminar Productos</h2>
+      <div>
         {products.map((product) => (
           <div key={product.id} className="card">
             {editingProduct === product.id ? (
-              <div className="edit-form">
+              <div>
                 <input
                   type="text"
                   name="Nombre"
                   value={formData.Nombre}
-                  onChange={handleInputChange}
+                  onChange={(e) => setFormData({ ...formData, Nombre: e.target.value })}
                 />
                 <input
                   type="text"
                   name="Descripcion"
                   value={formData.Descripcion}
-                  onChange={handleInputChange}
+                  onChange={(e) => setFormData({ ...formData, Descripcion: e.target.value })}
                 />
                 <input
                   type="number"
                   name="Precio"
                   value={formData.Precio}
-                  onChange={handleInputChange}
+                  onChange={(e) => setFormData({ ...formData, Precio: e.target.value })}
                 />
-                <button onClick={() => saveChanges(product.id)} className="card-button-save">Guardar</button>
-                <button onClick={() => setEditingProduct(null)} className="card-button-cancel">Cancelar</button>
+                <button onClick={() => saveChanges(product.id)}>Guardar</button>
+                <button onClick={() => setEditingProduct(null)}>Cancelar</button>
               </div>
             ) : (
               <>
-                <h2 className="card-title">{product.Nombre}</h2>
-                <p className="card-description">{product.Descripcion}</p>
-                <p className="card-price">${product.Precio}</p>
-                <p
-                  className={`card-status ${
-                    product.Estado === "Disponible" ? "status-available" : "status-unavailable"
-                  }`}
-                >
-                  {product.Estado}
-                </p>
-                <div className="card-actions">
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                      checked={product.Estado === "Disponible"}
-                      onChange={() => toggleAvailability(product.id, product.Estado)}
-                    />
-                    <span className="slider round"></span>
-                  </label>
-                  <button onClick={() => startEditing(product)} className="card-button-edit">Editar</button>
-                  <button
-                    onClick={() => deleteProduct(product.id)}
-                    className="card-button card-button-delete"
-                  >
-                    Eliminar
-                  </button>
-                </div>
+                <h3>{product.Nombre}</h3>
+                <p>{product.Descripcion}</p>
+                <p>${product.Precio}</p>
+                <button onClick={() => toggleAvailability(product.id, product.Estado)}>
+                  {product.Estado === "Disponible" ? "Marcar como no disponible" : "Marcar como disponible"}
+                </button>
+                <button onClick={() => startEditing(product)}>Editar</button>
+                <button onClick={() => deleteProduct(product.id)}>Eliminar</button>
               </>
             )}
           </div>

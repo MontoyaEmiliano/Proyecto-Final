@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 
-const AddProduct = () => {
+const AddProduct = ({ handleAddProduct }) => {
   const [formData, setFormData] = useState({
     Nombre: "",
     Precio: "",
     Descripcion: "",
-    Estado: "Disponible", 
+    Estado: "Disponible",
   });
 
   const handleInputChange = (e) => {
@@ -18,10 +16,13 @@ const AddProduct = () => {
     }));
   };
 
-  const handleAddProduct = async (e) => {
+  const handleAddNewProduct = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "Products"), formData);
+      // Llamamos a la función pasada como prop para agregar el producto
+      handleAddProduct(formData);
+
+      // Limpiar el formulario después de agregar
       setFormData({
         Nombre: "",
         Precio: "",
@@ -38,7 +39,7 @@ const AddProduct = () => {
   return (
     <div className="add-product-container">
       <h1 className="add-product-title">Añadir Producto</h1>
-      <form onSubmit={handleAddProduct} className="add-product-form">
+      <form onSubmit={handleAddNewProduct} className="add-product-form">
         <div className="form-field">
           <label className="form-label">Nombre</label>
           <input

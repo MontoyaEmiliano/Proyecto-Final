@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createOrder } from '../services/orderService';
+//import emailjs from 'emailjs-com';
 
 const Pago = ({ orden, clearOrden, onOrderSuccess }) => {
   const [customerName, setCustomerName] = useState('');
@@ -38,6 +39,7 @@ const Pago = ({ orden, clearOrden, onOrderSuccess }) => {
     };
 
     try {
+      // 1. Crear el pedido en tu base de datos (Firebase, etc.)
       await createOrder(order);
       clearOrden();
       onOrderSuccess();
@@ -47,12 +49,19 @@ const Pago = ({ orden, clearOrden, onOrderSuccess }) => {
       setSplitAmounts([]);
       setShowCardModal(false);
       setCardDetails({ cardNumber: '', expiryDate: '', cvv: '' });
+      
+      // 2. Generar el ticket
       generateTicket(order, totalAmount, splitPerPerson);
+
+      // 3. Enviar el correo con los detalles del pedido utilizando EmailJS
+      sendEmail(order, totalAmount, splitPerPerson);
+
     } catch (error) {
       console.error('Error al realizar el pedido:', error);
     }
   };
 
+  // Generar los detalles del ticket
   const generateTicket = (order, totalAmount, splitPerPerson) => {
     const ticketData = `
       ------------------------
@@ -66,10 +75,10 @@ const Pago = ({ orden, clearOrden, onOrderSuccess }) => {
       Detalles de la Orden:
       ${order.items.map(item => `${item.name} x${item.quantity} - $${item.price}`).join('\n')}
       
+      Total a Pagar: $${totalAmount}
+      Dividido entre ${splitCount} personas: $${splitPerPerson.toFixed(2)} por persona
       
       Método de Pago: ${order.payment}
-      
-      
       
       ------------------------
       ¡Gracias por su compra!
@@ -77,6 +86,28 @@ const Pago = ({ orden, clearOrden, onOrderSuccess }) => {
     `;
     setTicket(ticketData);
     setShowTicketModal(true);
+  };
+
+  // Enviar el correo con EmailJS
+  const sendEmail = (order, totalAmount, splitPerPerson) => {
+    const templateParams = {
+      customer_name: order.customerName,
+      items: order.items.map(item => `${item.name} x${item.quantity} - $${item.price}`).join(', '),
+      total_amount: totalAmount,
+      split_per_person: splitPerPerson.toFixed(2),
+      payment_method: order.payment,
+      split_count: splitCount,
+      timestamp: order.timestamp.toLocaleString(),
+    };
+
+    // Enviar el correo con los parámetros a través de EmailJS
+    emailjs.send('service_coijrnr', 'template_kwttt6n', templateParams, 'E3WYl4yZJVVqis7X3')
+      .then(response => {
+        console.log('Correo enviado con éxito:', response);
+      })
+      .catch(error => {
+        console.error('Error al enviar el correo:', error);
+      });
   };
 
   const handleSplitChange = (e) => {
