@@ -1,97 +1,105 @@
-/* Estilo general para la página */
 .orders-container {
-    max-width: 1200px;
-    margin: 20px auto;
     padding: 20px;
+    background-color: #f7f7f7;
     font-family: 'Arial', sans-serif;
-    color: #333;
   }
   
-  h2 {
+  .order-header {
+    font-size: 24px;
+    color: #333;
     text-align: center;
     margin-bottom: 20px;
-    font-size: 1.5rem;
   }
   
   .orders-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
   
   .order-card {
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
     padding: 20px;
-    transition: transform 0.3s ease;
-    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
   }
   
   .order-card:hover {
-    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
   
-  .order-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: #4A90E2;
+  .order-title {
+    font-size: 20px;
+    color: #333;
   }
   
-  .order-card p, .order-card ul {
-    font-size: 1rem;
-    margin-bottom: 15px;
+  .order-date, .order-items-title, .order-status {
+    color: #555;
+    font-size: 14px;
   }
   
-  ul {
-    list-style-type: none;
+  .order-items {
+    list-style: none;
     padding: 0;
+    font-size: 16px;
   }
   
-  ul li {
+  .order-item {
     margin-bottom: 5px;
   }
   
   .order-actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
+    gap: 10px;
+    margin-top: 10px;
   }
   
-  .btn {
-    padding: 8px 15px;
+  .order-btn {
+    padding: 8px 16px;
     font-size: 14px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: bold;
   }
   
-  .ready-btn {
+  .order-btn.default {
+    background-color: #f44336;
+    color: #fff;
+  }
+  
+  .order-btn.default:hover {
+    background-color: #e53935;
+    transform: scale(1.05);
+  }
+  
+  .order-btn.ready {
     background-color: #4caf50;
-    color: white;
+    color: #fff;
   }
   
-  .ready-btn:hover {
-    background-color: #45a049;
+  .order-btn.ready:hover {
+    background-color: #388e3c;
+    transform: scale(1.05);
   }
   
-  .preparing-btn {
+  .order-btn.preparing {
     background-color: #ff9800;
-    color: white;
+    color: #fff;
   }
   
-  .preparing-btn:hover {
+  .order-btn.preparing:hover {
     background-color: #fb8c00;
+    transform: scale(1.05);
   }
   
-  .order-card p strong {
+  .order-status {
+    margin-top: 10px;
+    font-size: 16px;
     font-weight: bold;
+    color: #333;
   }
   
-  /* Estilos para el estado de la orden */
-  .order-card .status {
-    font-weight: bold;
-    color: #4CAF50;
-  }
-  
+    

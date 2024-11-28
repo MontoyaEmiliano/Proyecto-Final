@@ -6,6 +6,7 @@ const UserHistory = ({ loggedInUserName }) => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
 
+  // Función para obtener las órdenes desde Firebase
   const fetchOrders = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Orders"));
@@ -13,62 +14,123 @@ const UserHistory = ({ loggedInUserName }) => {
         id: doc.id,
         ...doc.data(),
       }));
+      console.log("Órdenes obtenidas:", ordersData);  // Verifica los datos recibidos
       setOrders(ordersData);
     } catch (error) {
       console.error("Error fetching orders: ", error);
     }
   };
 
+  // useEffect para obtener las órdenes cuando el componente se monta
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  // Filtrar las órdenes según el nombre del usuario
   const handleSearch = () => {
+    if (!loggedInUserName) {
+      console.error("No user logged in.");
+      return;
+    }
+
+    // Asegúrate de que el nombre de usuario esté en el formato correcto
     const matchingOrders = orders.filter(
-      (order) => order.customerName.toLowerCase() === loggedInUserName.toLowerCase()
+      (order) =>
+        order.customerName &&
+        order.customerName.toLowerCase() === loggedInUserName.toLowerCase()
     );
+    console.log("Órdenes filtradas:", matchingOrders); // Verifica las órdenes filtradas
     setFilteredOrders(matchingOrders);
   };
 
+  // Limpiar el filtro y ocultar las órdenes filtradas
   const handleClear = () => {
     setFilteredOrders([]);
   };
 
   return (
-    <div className="user-history-container">
-      <h1 className="user-history-title">Consultar mi Historial</h1>
-      <div className="user-history-input-group">
+    <div className="user-history-container" style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Consultar mi Historial</h1>
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
         <button
           onClick={handleSearch}
-          className="user-history-search-button"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '16px',
+          }}
         >
           Buscar
         </button>
       </div>
+
+      {/* Mostrar historial de órdenes si hay coincidencias */}
       {filteredOrders.length > 0 && (
-        <div className="user-history-cards">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {filteredOrders.map((order) => (
-            <div key={order.id} className="card">
-              <h2 className="card-title">{order.customerName}</h2>
-              {order.items.map((item, index) => (
-                <div key={index} className="card-description">
-                  <p>Producto: {item.name}</p>
-                  <p>Cantidad: {item.Quantity}</p>
-                  <p>Precio: ${item.price}</p>
-                  <p>Descripción: {item.description}</p>
-                </div>
-              ))}
+            <div
+              key={order.id}
+              style={{
+                width: '80%',
+                marginBottom: '20px',
+                padding: '20px',
+                backgroundColor: '#f4f4f4',
+                borderRadius: '8px',
+                border: '1px solid #ddd',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              }}
+            >
+              <h3>{order.customerName} - Orden #{order.id}</h3>
+              <p><strong>Fecha de la orden:</strong> {new Date(order.timestamp.seconds * 1000).toLocaleDateString()}</p>
+              <div>
+                {order.items.map((item, index) => (
+                  <div key={index} style={{ marginBottom: '10px' }}>
+                    <p><strong>Producto:</strong> {item.name}</p>
+                    <p><strong>Cantidad:</strong> {item.quantity}</p>
+                    <p><strong>Precio:</strong> ${item.price}</p>
+                    <p><strong>Descripción:</strong> {item.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* Botón para ocultar las órdenes filtradas */}
       {filteredOrders.length > 0 && (
-        <button className="user-history-clear-button" onClick={handleClear}>
-          Ocultar
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button
+            onClick={handleClear}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#FF9800',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              marginTop: '20px',
+            }}
+          >
+            Ocultar
+          </button>
+        </div>
+      )}
+
+      {/* Si no hay órdenes para mostrar */}
+      {filteredOrders.length === 0 && (
+        <p style={{ textAlign: 'center', fontSize: '18px', color: '#888' }}>
+          No se encontraron órdenes para este usuario.
+        </p>
       )}
     </div>
   );
 };
 
 export default UserHistory;
+

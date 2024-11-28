@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createOrder } from '../services/orderService';
-//import emailjs from 'emailjs-com';
+import emailjs from 'emailjs-com';
 
 const Pago = ({ orden, clearOrden, onOrderSuccess }) => {
   const [customerName, setCustomerName] = useState('');

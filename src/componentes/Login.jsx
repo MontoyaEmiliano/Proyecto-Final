@@ -32,100 +32,163 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      {isRegistering ? (
-        <>
-          <h2>Registro</h2>
-          <input 
-            type="text" 
-            placeholder="Nombre" 
-            value={registerName} 
-            onChange={(e) => setRegisterName(e.target.value)} 
-            style={{ marginBottom: '10px' }}
-          />
-          <br />
-          <input 
-            type="email" 
-            placeholder="Correo electrónico" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            style={{ marginBottom: '10px' }}
-          />
-          <br />
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            value={registerPassword} 
-            onChange={(e) => setRegisterPassword(e.target.value)} 
-            style={{ marginBottom: '10px' }}
-          />
-          <br />
-          <label style={{ marginRight: '10px' }}>Rol:</label>
-          <select value={registerRole} onChange={(e) => setRegisterRole(e.target.value)} style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}>
-            <option value="user">Usuario</option>
-            <option value="admin">Administrador</option>
-          </select>
-          <br />
-          <button 
-            onClick={handleRegister} 
-            style={{ 
-              padding: '10px 20px', 
-              backgroundColor: '#333', 
-              color: '#fff', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              marginTop: '10px'
-            }}
-          >
-            Registrarse
-          </button>
-          <br />
-          <button onClick={() => setIsRegistering(false)} style={{ marginTop: '10px' }}>
-            Ya tengo una cuenta
-          </button>
-        </>
-      ) : (
-        <>
-          <h2>Inicio de Sesión </h2>
-          <input 
-            type="email" 
-            placeholder="Correo electrónico" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            style={{ marginBottom: '10px' }}
-          />
-          <br />
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            style={{ marginBottom: '10px' }}
-          />
-          <br />
-          <button 
-            onClick={handleLogin} 
-            style={{ 
-              padding: '10px 20px', 
-              backgroundColor: '#333', 
-              color: '#fff', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              marginTop: '10px'
-            }}
-          >
-            Iniciar Sesión
-          </button>
-          <br />
-          <button onClick={() => setIsRegistering(true)} style={{ marginTop: '10px' }}>
-            Crear una cuenta
-          </button>
-        </>
-      )}
+    <div style={containerStyle}>
+      <img src="../public/Restaurante.png" alt="Logo"  style={{ maxWidth: '30%', height: 'auto', borderRadius: '8px',marginBottom: '30px' }} />
+
+      <div style={formStyle}>
+        {isRegistering ? (
+          <>
+            <h2>Registro</h2>
+            <input 
+              type="text" 
+              placeholder="Nombre" 
+              value={registerName} 
+              onChange={(e) => setRegisterName(e.target.value)} 
+              style={inputStyle} 
+            />
+            <br />
+            <input 
+              type="email" 
+              placeholder="Correo electrónico" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              style={inputStyle} 
+            />
+            <br />
+            <input 
+              type="password" 
+              placeholder="Contraseña" 
+              value={registerPassword} 
+              onChange={(e) => setRegisterPassword(e.target.value)} 
+              style={inputStyle} 
+            />
+            <br />
+            <label style={labelStyle}>Rol:</label>
+            <select 
+              value={registerRole} 
+              onChange={(e) => setRegisterRole(e.target.value)} 
+              style={selectStyle}
+            >
+              <option value="user">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+            <br />
+            <button 
+              onClick={handleRegister} 
+              style={primaryButtonStyle}
+            >
+              Registrarse
+            </button>
+            <br />
+            <button onClick={() => setIsRegistering(false)} style={secondaryButtonStyle}>
+              Ya tengo una cuenta
+            </button>
+          </>
+        ) : (
+          <>
+            <h2>Inicio de Sesión</h2>
+            <input 
+              type="email" 
+              placeholder="Correo electrónico" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+              style={inputStyle} 
+            />
+            <br />
+            <input 
+              type="password" 
+              placeholder="Contraseña" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              style={inputStyle} 
+            />
+            <br />
+            <button 
+              onClick={handleLogin} 
+              style={primaryButtonStyle}
+            >
+              Iniciar Sesión
+            </button>
+            <br />
+            <button onClick={() => setIsRegistering(true)} style={secondaryButtonStyle}>
+              Crear una cuenta
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
+};
+
+// Estilos para el contenedor
+const containerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100vh',
+  backgroundColor: '#f4f4f4',
+  padding: '20px'
+};
+
+const imageStyle = {
+  maxWidth: '100%',
+  height: 'auto',
+  marginBottom: '20px',
+};
+
+const formStyle = {
+  backgroundColor: '#fff',
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+  width: '300px',
+  textAlign: 'center',
+};
+
+const inputStyle = {
+  marginBottom: '12px',
+  padding: '10px',
+  width: '100%',
+  borderRadius: '8px',
+  border: '1px solid #ddd',
+  fontSize: '14px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+};
+
+const selectStyle = {
+  padding: '10px',
+  width: '100%',
+  borderRadius: '8px',
+  border: '1px solid #ddd',
+  fontSize: '14px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+};
+
+const labelStyle = {
+  marginRight: '10px',
+};
+
+const primaryButtonStyle = {
+  padding: '10px 20px',
+  backgroundColor: '#007bff',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  marginTop: '20px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+};
+
+const secondaryButtonStyle = {
+  padding: '10px 20px',
+  backgroundColor: '#6c757d',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  marginTop: '10px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
 };
 
 export default Login;

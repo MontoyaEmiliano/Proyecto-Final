@@ -1,72 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import { getOrders } from '../services/orderService';
-import './Orders.css'; // Asegúrate de crear este archivo CSS
+import emailjs from 'emailjs-com';
+import './Orders.css'; // Asegúrate de tener el archivo CSS correspondiente
 
 export const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [newOrderCount, setNewOrderCount] = useState(0);
 
-  // Función para guardar el estado de las órdenes en localStorage
-  const saveOrdersToLocalStorage = (orders) => {
-    localStorage.setItem('orders', JSON.stringify(orders));
-  };
-
-  // Función para recuperar las órdenes desde localStorage
-  const getOrdersFromLocalStorage = () => {
-    const storedOrders = localStorage.getItem('orders');
-    if (storedOrders) {
-      return JSON.parse(storedOrders);
-    }
-    return [];
-  };
-
   useEffect(() => {
     const fetchOrders = async () => {
-      let data = await getOrders();
-      const sortedOrders = data.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds);
+      const data = await getOrders();
+      setNewOrderCount(data.length);
 
-      // Recuperar las órdenes almacenadas en localStorage y combinar los estados
-      const storedOrders = getOrdersFromLocalStorage();
+      const savedStatus = JSON.parse(localStorage.getItem('orderStatus')) || {};
+      const updatedOrders = data.map(order => {
+        order.status = savedStatus[order.id] || 'En preparación';
+        return order;
+      });
 
-      // Si ya hay datos guardados en localStorage, se combinan con los datos nuevos.
-      if (storedOrders.length > 0) {
-        // Mapear los datos de localStorage con los datos nuevos para conservar el estado.
-        sortedOrders.forEach(order => {
-          const storedOrder = storedOrders.find(o => o.id === order.id);
-          if (storedOrder) {
-            order.status = storedOrder.status;
-          }
-        });
-      }
-
-      setOrders(sortedOrders);
-      setNewOrderCount(sortedOrders.length);
+      setOrders(updatedOrders);
     };
 
     fetchOrders();
   }, []);
 
-  const handleOrderStatusChange = (orderId, status) => {
-    const updatedOrders = orders.map(order =>
-      order.id === orderId ? { ...order, status } : order
-    );
+  const sendEmail = (order) => {
+    const templateParams = {
+      order_id: order.id,
+      customer_name: order.customerName,
+      items: order.items.map(item => `${item.name} x${item.quantity}`).join(', '),
+      order_status: order.status,
+      timestamp: new Date(order.timestamp.seconds * 1000).toLocaleString(),
+    };
 
+    emailjs.send('service_coijrnr', 'template_vfvq0hm', templateParams, 'E3WYl4yZJVVqis7X3')
+      .then(response => {
+        console.log('Correo enviado con éxito:', response);
+      })
+      .catch(error => {
+        console.error('Error al enviar el correo:', error);
+      });
+  };
+
+  const handleOrderStatusChange = (orderId, status) => {
+    const updatedOrders = orders.map(order => {
+      if (order.id === orderId) {
+        order.status = status;
+        if (status === 'Listo') {
+          sendEmail(order); // Enviar correo cuando se marca como "Listo"
+        }
+      }
+      return order;
+    });
+
+    const updatedStatus = {};
+    updatedOrders.forEach(order => {
+      updatedStatus[order.id] = order.status;
+    });
+
+    localStorage.setItem('orderStatus', JSON.stringify(updatedStatus));
     setOrders(updatedOrders);
-    saveOrdersToLocalStorage(updatedOrders); // Guardar el estado actualizado en localStorage
   };
 
   return (
     <div className="orders-container">
-      <h2>Tienes {newOrderCount} {newOrderCount === 1 ? 'orden nueva' : 'órdenes nuevas'}</h2>
+      <h2 className="order-header">
+        Tienes {newOrderCount} {newOrderCount === 1 ? 'orden nueva' : 'órdenes nuevas'}
+      </h2>
       <div className="orders-list">
         {orders.map((order) => (
           <div key={order.id} className="order-card">
-            <h3>Orden #{order.id}</h3>
-            <p><strong>Fecha:</strong> {new Date(order.timestamp.seconds * 1000).toLocaleDateString()}</p>
-            <h4>Ítems:</h4>
-            <ul>
+            <h3 className="order-title">Orden #{order.id}</h3>
+            <p className="order-date"><strong>Fecha:</strong> {new Date(order.timestamp.seconds * 1000).toLocaleDateString()}</p>
+            <h4 className="order-items-title">Ítems:</h4>
+            <ul className="order-items">
               {order.items?.map((item) => (
-                <li key={item.name}>
+                <li key={item.name} className="order-item">
                   {item.name} {item.quantity > 1 && `(x${item.quantity})`}
                 </li>
               ))}
@@ -74,18 +83,18 @@ export const Orders = () => {
             <div className="order-actions">
               <button
                 onClick={() => handleOrderStatusChange(order.id, 'Listo')}
-                className="btn ready-btn"
+                className={`order-btn ${order.status === 'Listo' ? 'ready' : 'default'}`}
               >
                 Listo
               </button>
               <button
                 onClick={() => handleOrderStatusChange(order.id, 'En preparación')}
-                className="btn preparing-btn"
+                className={`order-btn ${order.status === 'En preparación' ? 'preparing' : 'default'}`}
               >
                 En preparación
               </button>
             </div>
-            {order.status && <p><strong>Estado:</strong> {order.status}</p>}
+            {order.status && <p className="order-status"><strong>Estado:</strong> {order.status}</p>}
           </div>
         ))}
       </div>
