@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getOrders } from '../services/orderService';
 import emailjs from 'emailjs-com';
-import './Orders.css'; // Asegúrate de tener el archivo CSS correspondiente
+import './Orders.css';
 
 export const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -47,11 +47,12 @@ export const Orders = () => {
       if (order.id === orderId) {
         order.status = status;
         if (status === 'Listo') {
-          sendEmail(order); // Enviar correo cuando se marca como "Listo"
+          sendEmail(order);
+          return null; 
         }
       }
       return order;
-    });
+    }).filter(order => order !== null);
 
     const updatedStatus = {};
     updatedOrders.forEach(order => {

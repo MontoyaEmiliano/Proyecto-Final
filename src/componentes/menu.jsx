@@ -1,85 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../services/firebase";
 
-const App = () => {
-  // Datos de ejemplo del menú
-  const menuItems = [
-    { id: 1, Nombre: "Pizza", Precio: 100, Descripcion: "Pizza con queso y tomate" },
-    { id: 2, Nombre: "Pasta", Precio: 80, Descripcion: "Pasta con salsa roja" },
-    { id: 3, Nombre: "Ensalada", Precio: 50, Descripcion: "Ensalada fresca con aderezo" },
-    { id: 4, Nombre: "Hamburguesa", Precio: 120, Descripcion: "Hamburguesa con carne de res" },
-    { id: 5, Nombre: "Tacos", Precio: 60, Descripcion: "Tacos al pastor" }
-  ];
-
-  // Estado para los ítems de la orden
+const Menu = () => {
+  const [menuItems, setMenuItems] = useState([]);
   const [ordenItems, setOrdenItems] = useState([]);
 
-  // Función para agregar un ítem a la orden
+  const fetchMenuItems = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Products"));
+      const products = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMenuItems(products);
+    } catch (error) {
+      console.error("Error al cargar los productos:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
   const addToOrden = (item) => {
     setOrdenItems((prevItems) => [...prevItems, item]);
   };
 
-  // Función para eliminar un ítem de la orden
   const removeFromOrden = (item) => {
     setOrdenItems((prevItems) => prevItems.filter((ordenItem) => ordenItem.id !== item.id));
   };
 
-  // Función para limpiar la orden
   const clearOrden = () => {
-    setOrdenItems([]); // Limpiar el estado de la orden
+    setOrdenItems([]);
   };
 
-  // Calcular el total de la orden
   const getTotal = () => {
-    return ordenItems.reduce((total, item) => total + item.Precio, 0);
+    return ordenItems.reduce((total, item) => total + parseFloat(item.Precio), 0);
   };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '40px' }}>Menú</h2>
+    <div>
+      <h2 className="text-center text-white text-3xl font-bold mb-8">Menú</h2>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
+      <div className="cards-container">
         {menuItems.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              width: '30%',
-              marginBottom: '20px',
-              padding: '15px',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              backgroundColor: '#333',
-              color: '#fff',
-              boxSizing: 'border-box',
-              textAlign: 'center'
-            }}
-          >
-            <h3>{item.Nombre} - ${item.Precio}</h3>
-            <p>{item.Descripcion}</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-              <button
-                onClick={() => addToOrden(item)}
-                style={{
-                  padding: '5px 10px',
-                  backgroundColor: '#444',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
+          <div key={item.id} className="card">
+            <h3 className="card-title">{item.Nombre}</h3>
+            <p className="card-description">{item.Descripcion}</p>
+            <p className="card-price">${item.Precio}</p>
+            <div className="card-actions">
+              <button onClick={() => addToOrden(item)} className="card-button card-button-add">
                 Agregar
               </button>
-              <button
-                onClick={() => removeFromOrden(item)}
-                style={{
-                  padding: '5px 10px',
-                  backgroundColor: '#ff4d4d',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
+              <button onClick={() => removeFromOrden(item)} className="card-button card-button-delete">
                 Eliminar
               </button>
             </div>
@@ -87,38 +61,25 @@ const App = () => {
         ))}
       </div>
 
-      <div style={{ marginTop: '40px', textAlign: 'center' }}>
-        <h3>Órdenes agregadas:</h3>
+      <div className="mt-10 text-center">
+        <h3 className="text-2xl font-bold text-white">Órdenes agregadas:</h3>
         {ordenItems.length > 0 ? (
-          <ul style={{ listStyle: 'none', padding: '0' }}>
+          <ul className="list-none mt-4">
             {ordenItems.map((item, index) => (
-              <li key={index} style={{ marginBottom: '10px', fontSize: '18px' }}>
+              <li key={index} className="text-white text-lg">
                 {item.Nombre} - ${item.Precio}
               </li>
             ))}
           </ul>
         ) : (
-          <p>No has agregado ningún ítem a la orden.</p>
+          <p className="text-gray-400 mt-4">No has agregado ningún ítem a la orden.</p>
         )}
 
-        {/* Mostrar el total */}
         {ordenItems.length > 0 && (
-          <h3 style={{ marginTop: '20px' }}>Total: ${getTotal()}</h3>
+          <h3 className="text-2xl font-bold text-green-400 mt-4">Total: ${getTotal()}</h3>
         )}
 
-        {/* Botón para limpiar la orden */}
-        <button
-          onClick={clearOrden}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#ff9800',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginTop: '20px'
-          }}
-        >
+        <button onClick={clearOrden} className="card-button card-button-delete mt-4">
           Limpiar orden
         </button>
       </div>
@@ -126,4 +87,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Menu;

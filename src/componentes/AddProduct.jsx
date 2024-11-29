@@ -19,17 +19,13 @@ const AddProduct = ({ handleAddProduct }) => {
   const handleAddNewProduct = async (e) => {
     e.preventDefault();
     try {
-      // Llamamos a la función pasada como prop para agregar el producto
       handleAddProduct(formData);
-
-      // Limpiar el formulario después de agregar
       setFormData({
         Nombre: "",
         Precio: "",
         Descripcion: "",
         Estado: "Disponible",
       });
-
       console.log("Producto añadido exitosamente.");
     } catch (error) {
       console.error("Error añadiendo el producto: ", error);

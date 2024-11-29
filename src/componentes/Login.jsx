@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { loginUser, registerUser } from '../services/auth'; 
+import logo from '../assets/logo.png';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -33,8 +34,9 @@ const Login = ({ onLogin }) => {
 
   return (
     <div style={containerStyle}>
-      <img src="../public/Restaurante.png" alt="Logo"  style={{ maxWidth: '30%', height: 'auto', borderRadius: '8px',marginBottom: '30px' }} />
-
+      <div style={imageContainerStyle}>
+        <img src={logo} alt="Logo" style={imageStyle} />
+      </div>
       <div style={formStyle}>
         {isRegistering ? (
           <>
@@ -120,30 +122,37 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// Estilos para el contenedor
 const containerStyle = {
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'row',
   justifyContent: 'center',
   alignItems: 'center',
   height: '100vh',
-  backgroundColor: '#f4f4f4',
+  backgroundColor: '#1a202c',
   padding: '20px'
 };
 
+const imageContainerStyle = {
+  flex: 1,
+  textAlign: 'center',
+  padding: '20px',
+  marginLeft: '20px',
+};
+
 const imageStyle = {
-  maxWidth: '100%',
+  maxWidth: '40%',
   height: 'auto',
-  marginBottom: '20px',
+  borderRadius: '8px',
 };
 
 const formStyle = {
-  backgroundColor: '#fff',
+  backgroundColor: '#1a202c',
   padding: '20px',
   borderRadius: '8px',
   boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
   width: '300px',
   textAlign: 'center',
+  flex: 1,
 };
 
 const inputStyle = {
@@ -171,7 +180,7 @@ const labelStyle = {
 
 const primaryButtonStyle = {
   padding: '10px 20px',
-  backgroundColor: '#007bff',
+  backgroundColor: 'green',
   color: '#fff',
   border: 'none',
   borderRadius: '8px',
@@ -182,7 +191,7 @@ const primaryButtonStyle = {
 
 const secondaryButtonStyle = {
   padding: '10px 20px',
-  backgroundColor: '#6c757d',
+  backgroundColor: 'blue',
   color: '#fff',
   border: 'none',
   borderRadius: '8px',

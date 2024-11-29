@@ -14,36 +14,36 @@ const UserHistory = ({ loggedInUserName }) => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log("Órdenes obtenidas:", ordersData);  // Verifica los datos recibidos
+      console.log("Órdenes obtenidas:", ordersData);  
       setOrders(ordersData);
     } catch (error) {
       console.error("Error fetching orders: ", error);
     }
   };
 
-  // useEffect para obtener las órdenes cuando el componente se monta
+  
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  // Filtrar las órdenes según el nombre del usuario
+  
   const handleSearch = () => {
     if (!loggedInUserName) {
       console.error("No user logged in.");
       return;
     }
 
-    // Asegúrate de que el nombre de usuario esté en el formato correcto
+   
     const matchingOrders = orders.filter(
       (order) =>
         order.customerName &&
         order.customerName.toLowerCase() === loggedInUserName.toLowerCase()
     );
-    console.log("Órdenes filtradas:", matchingOrders); // Verifica las órdenes filtradas
+    console.log("Órdenes filtradas:", matchingOrders);
     setFilteredOrders(matchingOrders);
   };
 
-  // Limpiar el filtro y ocultar las órdenes filtradas
+ 
   const handleClear = () => {
     setFilteredOrders([]);
   };
@@ -56,7 +56,7 @@ const UserHistory = ({ loggedInUserName }) => {
           onClick={handleSearch}
           style={{
             padding: '10px 20px',
-            backgroundColor: '#4CAF50',
+            backgroundColor: '#3B82F6',
             color: 'white',
             border: 'none',
             borderRadius: '5px',
@@ -68,7 +68,7 @@ const UserHistory = ({ loggedInUserName }) => {
         </button>
       </div>
 
-      {/* Mostrar historial de órdenes si hay coincidencias */}
+      
       {filteredOrders.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {filteredOrders.map((order) => (
@@ -101,7 +101,6 @@ const UserHistory = ({ loggedInUserName }) => {
         </div>
       )}
 
-      {/* Botón para ocultar las órdenes filtradas */}
       {filteredOrders.length > 0 && (
         <div style={{ textAlign: 'center' }}>
           <button
@@ -122,7 +121,7 @@ const UserHistory = ({ loggedInUserName }) => {
         </div>
       )}
 
-      {/* Si no hay órdenes para mostrar */}
+    
       {filteredOrders.length === 0 && (
         <p style={{ textAlign: 'center', fontSize: '18px', color: '#888' }}>
           No se encontraron órdenes para este usuario.

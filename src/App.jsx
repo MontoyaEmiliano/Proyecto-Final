@@ -11,7 +11,7 @@ import AddProduct from "./componentes/AddProduct";
 import Cards from "./componentes/Cards";
 import { collection, onSnapshot, addDoc } from "firebase/firestore";
 import { db } from "./services/firebase";
-import UserHistory from "./componentes/UserHistory";
+import UserHistory from "./componentes/userHistory";
 
 const App = () => {
   const [menuItems, setMenuItems] = useState([]); // Estado para almacenar los productos
